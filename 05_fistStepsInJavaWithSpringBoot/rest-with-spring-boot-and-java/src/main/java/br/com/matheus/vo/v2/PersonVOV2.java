@@ -1,4 +1,4 @@
-package br.com.matheus.data.vo.v2;
+package br.com.matheus.vo.v2;
 
 import java.io.Serializable;
 import java.util.Date;

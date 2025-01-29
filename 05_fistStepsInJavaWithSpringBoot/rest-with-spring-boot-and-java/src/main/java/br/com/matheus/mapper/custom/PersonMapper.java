@@ -4,7 +4,7 @@ import java.util.Date;
 
 import org.springframework.stereotype.Service;
 
-import br.com.matheus.data.vo.v2.PersonVOV2;
+import br.com.matheus.vo.v2.PersonVOV2;
 import br.com.matheus.model.Person;
 
 @Service

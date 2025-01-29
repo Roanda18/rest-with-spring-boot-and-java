@@ -1,4 +1,4 @@
-package br.com.matheus.data.vo.v1;
+package br.com.matheus.vo.v1;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -8,6 +8,9 @@ import org.springframework.hateoas.RepresentationModel;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema
 @JsonPropertyOrder({"id","first_name","lastName","address","gender"})
 public class PersonVO extends RepresentationModel<PersonVO> implements Serializable {
 

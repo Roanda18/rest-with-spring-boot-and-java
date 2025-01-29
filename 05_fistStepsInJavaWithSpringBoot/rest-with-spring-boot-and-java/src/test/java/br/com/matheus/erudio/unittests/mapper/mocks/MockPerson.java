@@ -1,9 +1,9 @@
-package br.com.erudio.unittests.mapper.mocks;
+package br.com.matheus.erudio.unittests.mapper.mocks;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.matheus.data.vo.v1.PersonVO;
+import br.com.matheus.vo.v1.PersonVO;
 import br.com.matheus.model.Person;
 
 public class MockPerson {

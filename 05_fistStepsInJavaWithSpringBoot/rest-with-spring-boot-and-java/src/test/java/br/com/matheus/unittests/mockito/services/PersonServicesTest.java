@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -20,8 +19,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import br.com.erudio.unittests.mapper.mocks.MockPerson;
-import br.com.matheus.data.vo.v1.PersonVO;
+import br.com.matheus.erudio.unittests.mapper.mocks.MockPerson;
+import br.com.matheus.vo.v1.PersonVO;
 import br.com.matheus.exceptions.RequiredObjectIsNullExeption;
 import br.com.matheus.model.Person;
 import br.com.matheus.repositories.PersonRepository;

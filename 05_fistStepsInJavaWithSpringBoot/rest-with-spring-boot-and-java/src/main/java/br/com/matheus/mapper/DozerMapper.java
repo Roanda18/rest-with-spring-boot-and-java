@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.modelmapper.ModelMapper;
 
-import br.com.matheus.data.vo.v1.PersonVO;
+import br.com.matheus.vo.v1.PersonVO;
 import br.com.matheus.model.Person;
 
 public class DozerMapper {

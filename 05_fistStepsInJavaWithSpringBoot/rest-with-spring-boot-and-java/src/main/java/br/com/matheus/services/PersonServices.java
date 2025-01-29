@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.matheus.controllers.PersonController;
-import br.com.matheus.data.vo.v1.PersonVO;
-import br.com.matheus.data.vo.v2.PersonVOV2;
+import br.com.matheus.vo.v1.PersonVO;
+import br.com.matheus.vo.v2.PersonVOV2;
 import br.com.matheus.exceptions.RequiredObjectIsNullExeption;
 import br.com.matheus.exceptions.ResourceNotFoundException;
 import br.com.matheus.mapper.DozerMapper;

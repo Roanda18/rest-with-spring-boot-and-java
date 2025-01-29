@@ -11,7 +11,7 @@ import io.swagger.v3.oas.models.info.License;
 public class OpenApiConfig {
 
 	@Bean
-	public OpenAPI customOpenAPI() {
+	OpenAPI customOpenAPI() {
 		return new OpenAPI().info(new Info().title("RESTful API with Java").version("v1")
 				.description("API register people").termsOfService("https://www.tiktok.com/@matheusmatos018")
 				.license(new License().name("Apache 2.0").url("https://www.tiktok.com/@matheusmatos018")));
