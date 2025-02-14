@@ -1,5 +1,12 @@
 server:
   port: 8888
+cors:
+  originPatterns: http://localhost:3000,http://localhost:8080,https://matheus.com.br
+security:
+  jwt:
+    token:
+      security-key: 556bmg0507
+      expire-length: 3600000
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -12,6 +19,8 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
     show-sql: false
 springdoc:
-  pathsToMath: /api/**/v1/**
+  pathsToMath:
+    - /auth/**
+    - /api/**/v1/**
   swagger-ui:
     use-root-path: true
