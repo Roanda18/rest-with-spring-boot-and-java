@@ -5,20 +5,21 @@ import br.com.matheus.integrationtests.testcontainers.AbstractIntegrationTest;
 import br.com.matheus.integrationtests.vo.AccountCredentialsVO;
 import br.com.matheus.integrationtests.vo.BookVO;
 import br.com.matheus.integrationtests.vo.TokenVO;
+import br.com.matheus.integrationtests.vo.pagedmodels.PagedModelBook;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.config.EncoderConfig;
+import io.restassured.config.RestAssuredConfig;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
+import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.JsonMappingException;
 
-import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
@@ -28,14 +29,13 @@ import static io.restassured.RestAssured.given;
 public class BookControllerYamlTest extends AbstractIntegrationTest {
 
     private static RequestSpecification specification;
-    private static XmlMapper objectMapper;
+    private static YmlMapper objectMapper;
 
     private static BookVO book;
 
     @BeforeAll
     public static void setup() {
-        objectMapper = new XmlMapper();
-        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        objectMapper = new YmlMapper();
         book = new BookVO();
     }
 
@@ -45,18 +45,19 @@ public class BookControllerYamlTest extends AbstractIntegrationTest {
         AccountCredentialsVO user = new AccountCredentialsVO("matheus", "admin556");
 
         var accessToken = given()
+                .config(RestAssuredConfig.config().encoderConfig(EncoderConfig.encoderConfig().encodeContentTypeAs(TestConfigs.CONTENT_TYPE_YML, ContentType.TEXT)))
                 .basePath("/auth/signin")
                 .port(TestConfigs.SERVER_PORT)
-                .contentType(TestConfigs.CONTENT_TYPE_XML)
-                .accept(TestConfigs.CONTENT_TYPE_XML)
-                .body(user)
+                .contentType(TestConfigs.CONTENT_TYPE_YML)
+                .accept(TestConfigs.CONTENT_TYPE_YML)
+                .body(user, objectMapper)
                 .when()
                 .post()
                 .then()
                 .statusCode(200)
                 .extract()
                 .body()
-                .as(TokenVO.class)
+                .as(TokenVO.class, objectMapper)
                 .getAccessToken();
 
         specification = new RequestSpecBuilder()
@@ -74,19 +75,19 @@ public class BookControllerYamlTest extends AbstractIntegrationTest {
     public void testCreate() throws JsonMappingException, JsonProcessingException {
         mockBook();
 
-        var content = given().spec(specification)
-                .contentType(TestConfigs.CONTENT_TYPE_XML)
-                .accept(TestConfigs.CONTENT_TYPE_XML)
-                .body(book)
+        var persistedBook = given().spec(specification)
+                .config(RestAssuredConfig.config().encoderConfig(EncoderConfig.encoderConfig().encodeContentTypeAs(TestConfigs.CONTENT_TYPE_YML, ContentType.TEXT)))
+                .contentType(TestConfigs.CONTENT_TYPE_YML)
+                .accept(TestConfigs.CONTENT_TYPE_YML)
+                .body(book, objectMapper)
                 .when()
                 .post()
                 .then()
                 .statusCode(200)
                 .extract()
                 .body()
-                .asString();
+                .as(BookVO.class, objectMapper);
 
-        BookVO persistedBook = objectMapper.readValue(content, BookVO.class);
         book = persistedBook;
         Assertions.assertNotNull(persistedBook);
         Assertions.assertNotNull(persistedBook.getId());
@@ -108,19 +109,19 @@ public class BookControllerYamlTest extends AbstractIntegrationTest {
     public void testUpdate() throws JsonMappingException, JsonProcessingException {
         book.setGender("Fantasia Medieval");
 
-        var content = given().spec(specification)
-                .contentType(TestConfigs.CONTENT_TYPE_XML)
-                .accept(TestConfigs.CONTENT_TYPE_XML)
-                .body(book)
+        var persistedBook = given().spec(specification)
+                .config(RestAssuredConfig.config().encoderConfig(EncoderConfig.encoderConfig().encodeContentTypeAs(TestConfigs.CONTENT_TYPE_YML, ContentType.TEXT)))
+                .contentType(TestConfigs.CONTENT_TYPE_YML)
+                .accept(TestConfigs.CONTENT_TYPE_YML)
+                .body(book, objectMapper)
                 .when()
                 .post()
                 .then()
                 .statusCode(200)
                 .extract()
                 .body()
-                .asString();
+                .as(BookVO.class, objectMapper);
 
-        BookVO persistedBook = objectMapper.readValue(content, BookVO.class);
         book = persistedBook;
         Assertions.assertNotNull(persistedBook);
         Assertions.assertNotNull(persistedBook.getId());
@@ -143,9 +144,10 @@ public class BookControllerYamlTest extends AbstractIntegrationTest {
     public void testFindById() throws JsonProcessingException {
         mockBook();
 
-        var content = given().spec(specification)
-                .contentType(TestConfigs.CONTENT_TYPE_XML)
-                .accept(TestConfigs.CONTENT_TYPE_XML)
+        var persistedBook = given().spec(specification)
+                .config(RestAssuredConfig.config().encoderConfig(EncoderConfig.encoderConfig().encodeContentTypeAs(TestConfigs.CONTENT_TYPE_YML, ContentType.TEXT)))
+                .contentType(TestConfigs.CONTENT_TYPE_YML)
+                .accept(TestConfigs.CONTENT_TYPE_YML)
                 .header(TestConfigs.HEADER_PARAM_ORIGINS, TestConfigs.ORIGIN_MATHEUS)
                 .pathParam("id", book.getId())
                 .when()
@@ -154,9 +156,8 @@ public class BookControllerYamlTest extends AbstractIntegrationTest {
                 .statusCode(200)
                 .extract()
                 .body()
-                .asString();
+                .as(BookVO.class, objectMapper);
 
-        BookVO persistedBook = objectMapper.readValue(content, BookVO.class);
         book = persistedBook;
         Assertions.assertNotNull(persistedBook);
         Assertions.assertNotNull(persistedBook.getId());
@@ -178,8 +179,9 @@ public class BookControllerYamlTest extends AbstractIntegrationTest {
     public void testDelete() throws JsonProcessingException {
 
         given().spec(specification)
-                .contentType(TestConfigs.CONTENT_TYPE_XML)
-                .accept(TestConfigs.CONTENT_TYPE_XML)
+                .config(RestAssuredConfig.config().encoderConfig(EncoderConfig.encoderConfig().encodeContentTypeAs(TestConfigs.CONTENT_TYPE_YML, ContentType.TEXT)))
+                .contentType(TestConfigs.CONTENT_TYPE_YML)
+                .accept(TestConfigs.CONTENT_TYPE_YML)
                 .pathParam("id", book.getId())
                 .when()
                 .delete("{id}")
@@ -192,24 +194,20 @@ public class BookControllerYamlTest extends AbstractIntegrationTest {
     @Order(5)
     public void testFindAll() throws JsonMappingException, JsonProcessingException {
 
-        var content = given().spec(specification)
-                .contentType(TestConfigs.CONTENT_TYPE_XML)
-                .accept(TestConfigs.CONTENT_TYPE_XML)
+        var wrapper = given().spec(specification)
+                .config(RestAssuredConfig.config().encoderConfig(EncoderConfig.encoderConfig().encodeContentTypeAs(TestConfigs.CONTENT_TYPE_YML, ContentType.TEXT)))
+                .contentType(TestConfigs.CONTENT_TYPE_YML)
+                .accept(TestConfigs.CONTENT_TYPE_YML)
+                .queryParams("page", 3, "size", 10, "direction", "asc")
                 .when()
                 .get()
                 .then()
                 .statusCode(200)
                 .extract()
                 .body()
-                .asString();
-        //.as(new TypeRef<List<PersonVO>>() {});
+                .as(PagedModelBook.class, objectMapper);
 
-        List<BookVO> book = objectMapper.readValue(content, new TypeReference<List<BookVO>>() {
-            @Override
-            public Type getType() {
-                return super.getType();
-            }
-        });
+        var book = wrapper.getContent();
 
         BookVO foundBookOne = book.get(0);
 
@@ -219,12 +217,12 @@ public class BookControllerYamlTest extends AbstractIntegrationTest {
         Assertions.assertNotNull(foundBookOne.getDescription());
         Assertions.assertNotNull(foundBookOne.getGender());
 
-        Assertions.assertEquals(1, foundBookOne.getId());
+        Assertions.assertEquals(419, foundBookOne.getId());
 
-        Assertions.assertEquals("Game of Thrones", foundBookOne.getNameBook());
-        Assertions.assertEquals("George R. R. Martin", foundBookOne.getNameAuthor());
-        Assertions.assertEquals("História de dragões", foundBookOne.getDescription());
-        Assertions.assertEquals("Fantasia", foundBookOne.getGender());
+        Assertions.assertEquals("All the President's Men", foundBookOne.getNameBook());
+        Assertions.assertEquals("Julienne Glowacz", foundBookOne.getNameAuthor());
+        Assertions.assertEquals("NextEra Energy, Inc.", foundBookOne.getDescription());
+        Assertions.assertEquals("Suspense", foundBookOne.getGender());
 
         BookVO foundBookFive = book.get(5);
 
@@ -234,12 +232,12 @@ public class BookControllerYamlTest extends AbstractIntegrationTest {
         Assertions.assertNotNull(foundBookFive.getDescription());
         Assertions.assertNotNull(foundBookFive.getGender());
 
-        Assertions.assertEquals(6, foundBookFive.getId());
+        Assertions.assertEquals(324, foundBookFive.getId());
 
-        Assertions.assertEquals("O Código Da Vinci", foundBookFive.getNameBook());
-        Assertions.assertEquals("Dan Brown", foundBookFive.getNameAuthor());
-        Assertions.assertEquals("Um mistério envolvendo arte e história", foundBookFive.getDescription());
-        Assertions.assertEquals("Suspense", foundBookFive.getGender());
+        Assertions.assertEquals("Amen.", foundBookFive.getNameBook());
+        Assertions.assertEquals("Vanessa Wyrall", foundBookFive.getNameAuthor());
+        Assertions.assertEquals("AXT Inc", foundBookFive.getDescription());
+        Assertions.assertEquals("Aventura", foundBookFive.getGender());
 
     }
 

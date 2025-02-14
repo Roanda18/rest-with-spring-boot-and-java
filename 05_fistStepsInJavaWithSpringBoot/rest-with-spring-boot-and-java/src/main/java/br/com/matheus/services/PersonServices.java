@@ -3,8 +3,7 @@ package br.com.matheus.services;
 import br.com.matheus.controllers.PersonController;
 import br.com.matheus.exceptions.RequiredObjectIsNullExeption;
 import br.com.matheus.exceptions.ResourceNotFoundException;
-import br.com.matheus.mapper.DozerMapper;
-import br.com.matheus.mapper.custom.PersonMapper;
+import br.com.matheus.mapper.PersonMapper;
 import br.com.matheus.model.Person;
 import br.com.matheus.repositories.PersonRepository;
 import br.com.matheus.vo.v1.PersonVO;
@@ -34,14 +33,14 @@ public class PersonServices {
     PagedResourcesAssembler<PersonVO> assembler;
 
     @Autowired
-    PersonMapper mapper;
+    br.com.matheus.mapper.custom.PersonMapper mapper;
 
     public PagedModel<EntityModel<PersonVO>> findAll(Pageable pageable) {
 
         logger.info("Finding all persons");
 
         var personPage = repository.findAll(pageable);
-        var personVoPage = personPage.map(p -> DozerMapper.parseObject(repository.save(p), PersonVO.class));
+        var personVoPage = personPage.map(p -> PersonMapper.parseObject(repository.save(p), PersonVO.class));
         personVoPage.map(p -> p.add(linkTo(methodOn(PersonController.class).findById(p.getKey())).withSelfRel()));
 
         Link link = linkTo(methodOn(PersonController.class).findAll(pageable.getPageNumber(),pageable.getPageSize(),"asc")).withSelfRel();
@@ -53,7 +52,7 @@ public class PersonServices {
         logger.info("Finding person by name");
 
         var personPage = repository.findPersonByName(firstname, pageable);
-        var personVoPage = personPage.map(p -> DozerMapper.parseObject(p, PersonVO.class));
+        var personVoPage = personPage.map(p -> PersonMapper.parseObject(p, PersonVO.class));
         personVoPage.map(p -> p.add(linkTo(methodOn(PersonController.class).findById(p.getKey())).withSelfRel()));
 
         Link link = linkTo(methodOn(PersonController.class).findAll(pageable.getPageNumber(),pageable.getPageSize(),"asc")).withSelfRel();
@@ -67,7 +66,7 @@ public class PersonServices {
         var entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID"));
 
-        PersonVO vo = DozerMapper.parseObject(entity, PersonVO.class);
+        PersonVO vo = PersonMapper.parseObject(entity, PersonVO.class);
         vo.add(linkTo(methodOn(PersonController.class).findById(id)).withSelfRel());
         return vo;
     }
@@ -78,8 +77,8 @@ public class PersonServices {
             throw new RequiredObjectIsNullExeption();
         }
         logger.info("Create person");
-        var entity = DozerMapper.parseObject(person, Person.class);
-        var vo = DozerMapper.parseObject(repository.save(entity), PersonVO.class);
+        var entity = PersonMapper.parseObject(person, Person.class);
+        var vo = PersonMapper.parseObject(repository.save(entity), PersonVO.class);
         vo.add(linkTo(methodOn(PersonController.class).findById(vo.getKey())).withSelfRel());
         return vo;
     }
@@ -107,7 +106,7 @@ public class PersonServices {
         entity.setAddress(person.getAddress());
         entity.setGender(person.getGender());
 
-        var vo = DozerMapper.parseObject(repository.save(entity), PersonVO.class);
+        var vo = PersonMapper.parseObject(repository.save(entity), PersonVO.class);
         vo.add(linkTo(methodOn(PersonController.class).findById(vo.getKey())).withSelfRel());
         return vo;
     }
@@ -120,7 +119,7 @@ public class PersonServices {
         repository.disablePerson(id);
         var entity = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No records found for this ID"));
 
-        var vo = DozerMapper.parseObject(entity, PersonVO.class);
+        var vo = PersonMapper.parseObject(entity, PersonVO.class);
         vo.add(linkTo(methodOn(PersonController.class).findById(id)).withSelfRel());
         return vo;
     }

@@ -8,7 +8,7 @@ import org.modelmapper.ModelMapper;
 import br.com.matheus.vo.v1.PersonVO;
 import br.com.matheus.model.Person;
 
-public class DozerMapper {
+public class PersonMapper {
 
 	private static ModelMapper mapper = new ModelMapper();
 	
