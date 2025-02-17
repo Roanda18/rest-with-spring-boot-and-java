@@ -242,6 +242,44 @@ public class BookControllerXmlTest extends AbstractIntegrationTest {
 
     }
 
+    @Test
+    @Order(6)
+    public void testFindByName() throws JsonMappingException, JsonProcessingException {
+
+        var content = given().spec(specification)
+                .contentType(TestConfigs.CONTENT_TYPE_XML)
+                .accept(TestConfigs.CONTENT_TYPE_XML)
+                .pathParam("nameBook", "principe")
+                .queryParams("page", 0 , "size", 5, "direction", "asc")
+                .when()
+                .get("findBookByName/{nameBook}")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .asString();
+        //.as(new TypeRef<List<PersonVO>>() {});
+
+        PagedModelBook wrapper = objectMapper.readValue(content, PagedModelBook.class);
+        var book = wrapper.getContent();
+
+        BookVO foundBookOne = book.get(0);
+
+        Assertions.assertNotNull(foundBookOne.getId());
+        Assertions.assertNotNull(foundBookOne.getNameBook());
+        Assertions.assertNotNull(foundBookOne.getNameAuthor());
+        Assertions.assertNotNull(foundBookOne.getDescription());
+        Assertions.assertNotNull(foundBookOne.getGender());
+
+        Assertions.assertEquals(10, foundBookOne.getId());
+
+        Assertions.assertEquals("O Pequeno Príncipe", foundBookOne.getNameBook());
+        Assertions.assertEquals("Antoine de Saint-Exupéry", foundBookOne.getNameAuthor());
+        Assertions.assertEquals("Uma história sobre amizade e amor", foundBookOne.getDescription());
+        Assertions.assertEquals("Clássico", foundBookOne.getGender());
+
+    }
+
     private void mockBook() {
         book.setNameBook("O Senhor dos Anéis");
         book.setNameAuthor("J.R.R. Tolkien");
