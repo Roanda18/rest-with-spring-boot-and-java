@@ -288,6 +288,44 @@ public class PersonControllerYamlTest extends AbstractIntegrationTest {
 
     }
 
+    @Test
+    @Order(7)
+    public void testFindByName() throws JsonMappingException, JsonProcessingException {
+
+        var wrapper = given().spec(specification)
+                .config(RestAssuredConfig.config().encoderConfig(EncoderConfig.encoderConfig().encodeContentTypeAs(TestConfigs.CONTENT_TYPE_YML, ContentType.TEXT)))
+                .contentType(TestConfigs.CONTENT_TYPE_YML)
+                .accept(TestConfigs.CONTENT_TYPE_YML)
+                .pathParam("firstName", "matheus")
+                .queryParams("page", 0 , "size", 5, "direction", "asc")
+                .when()
+                .get("findPersonByName/{firstName}")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(PagedModelPerson.class, objectMapper);
+
+        var people = wrapper.getContent();
+
+        PersonVO foundPersonOne = people.get(0);
+
+        assertNotNull(foundPersonOne.getId());
+        assertNotNull(foundPersonOne.getFirstName());
+        assertNotNull(foundPersonOne.getLastName());
+        assertNotNull(foundPersonOne.getAddress());
+        assertNotNull(foundPersonOne.getGender());
+        Assertions.assertTrue(foundPersonOne.getEnabled());
+
+        Assertions.assertEquals(1, foundPersonOne.getId());
+
+        Assertions.assertEquals("Matheus", foundPersonOne.getFirstName());
+        Assertions.assertEquals("Matos", foundPersonOne.getLastName());
+        Assertions.assertEquals("Brasilia", foundPersonOne.getAddress());
+        Assertions.assertEquals("Male", foundPersonOne.getGender());
+
+    }
+
     private void mockPerson() {
         person.setFirstName("Joao");
         person.setLastName("Ferras");

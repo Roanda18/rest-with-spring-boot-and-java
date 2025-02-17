@@ -276,6 +276,44 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
 
     }
 
+    @Test
+    @Order(7)
+    public void testFindByName() throws JsonMappingException, JsonProcessingException {
+
+        var content = given().spec(specification)
+                .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                .pathParam("firstName", "matheus")
+                .queryParams("page", 0 , "size", 5, "direction", "asc")
+                .when()
+                .get("findPersonByName/{firstName}")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .asString();
+                //.as(new TypeRef<List<PersonVO>>() {});
+
+        WrapperPersonVO wrapper = objectMapper.readValue(content, WrapperPersonVO.class);
+        var people = wrapper.getEmbedded().getPersons();
+
+        PersonVO foundPersonOne = people.get(0);
+
+        Assertions.assertNotNull(foundPersonOne.getId());
+        Assertions.assertNotNull(foundPersonOne.getFirstName());
+        Assertions.assertNotNull(foundPersonOne.getLastName());
+        Assertions.assertNotNull(foundPersonOne.getAddress());
+        Assertions.assertNotNull(foundPersonOne.getGender());
+        Assertions.assertTrue(foundPersonOne.getEnabled());
+
+        Assertions.assertEquals(1, foundPersonOne.getId());
+
+        Assertions.assertEquals("Matheus", foundPersonOne.getFirstName());
+        Assertions.assertEquals("Matos", foundPersonOne.getLastName());
+        Assertions.assertEquals("Brasilia", foundPersonOne.getAddress());
+        Assertions.assertEquals("Male", foundPersonOne.getGender());
+
+    }
+
     private void mockPerson() {
         person.setFirstName("Joao");
         person.setLastName("Ferras");
