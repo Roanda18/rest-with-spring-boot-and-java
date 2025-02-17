@@ -1,14 +1,11 @@
 package br.com.matheus.unittests.mockito.services;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
-
-import java.util.List;
-import java.util.Optional;
-
+import br.com.matheus.erudio.unittests.mapper.mocks.MockBook;
+import br.com.matheus.exceptions.RequiredObjectIsNullExeption;
+import br.com.matheus.model.Book;
+import br.com.matheus.repositories.BookRepository;
+import br.com.matheus.services.BookServices;
+import br.com.matheus.vo.v1.BookVO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -19,12 +16,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import br.com.matheus.erudio.unittests.mapper.mocks.MockBook;
-import br.com.matheus.vo.v1.BookVO;
-import br.com.matheus.exceptions.RequiredObjectIsNullExeption;
-import br.com.matheus.model.Book;
-import br.com.matheus.repositories.BookRepository;
-import br.com.matheus.services.BookServices;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension.class)
@@ -60,49 +55,6 @@ class BookServicesTest {
 		assertEquals("Good book1", result.getDescription());
 		assertEquals("Fiction", result.getGender());
 	}
-
-	/*
-	@Test
-	void testFindAll() {
-		List<Book> listaBook = input.mockEntityList();
-
-		when(repository.findAll()).thenReturn(listaBook);
-
-		var book = service.findAll();
-		assertNotNull(book);
-		assertEquals(14, book.size());
-
-		var bookOne = book.get(1);
-		assertNotNull(bookOne);
-		assertNotNull(bookOne.getKey());
-		assertNotNull(bookOne.getLinks());
-		assertTrue(bookOne.toString().contains("links: [</api/book/v1/1>;rel=\"self\"]"));
-		assertEquals("Book1", bookOne.getNameBook());
-		assertEquals("Anthony1", bookOne.getNameAuthor());
-		assertEquals("Good book1", bookOne.getDescription());
-		assertEquals("Fiction", bookOne.getGender());
-
-		var bookFour = book.get(4);
-		assertNotNull(bookFour);
-		assertNotNull(bookFour.getKey());
-		assertNotNull(bookFour.getLinks());
-		assertTrue(bookFour.toString().contains("links: [</api/book/v1/4>;rel=\"self\"]"));
-		assertEquals("Book4", bookFour.getNameBook());
-		assertEquals("Anthony4", bookFour.getNameAuthor());
-		assertEquals("Good book4", bookFour.getDescription());
-		assertEquals("Terror", bookFour.getGender());
- 
-		var bookSeven = book.get(7);
-		assertNotNull(bookSeven);
-		assertNotNull(bookSeven.getKey());
-		assertNotNull(bookSeven.getLinks());
-		assertTrue(bookSeven.toString().contains("links: [</api/book/v1/7>;rel=\"self\"]"));
-		assertEquals("Book7", bookSeven.getNameBook());
-		assertEquals("Anthony7", bookSeven.getNameAuthor());
-		assertEquals("Good book7", bookSeven.getDescription());
-		assertEquals("Fiction", bookSeven.getGender());
-	}
-	 */
 
 	@Test
 	void testCreate() {
