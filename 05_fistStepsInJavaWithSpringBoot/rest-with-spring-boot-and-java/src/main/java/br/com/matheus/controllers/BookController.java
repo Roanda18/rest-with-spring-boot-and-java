@@ -53,6 +53,29 @@ public class BookController {
     }
 
 
+    @GetMapping(value = "findBookByName/{nameBook}", produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML})
+    @Operation(summary = "Find book by name", description = "Find book by name", tags = {"Book"})
+    @ApiResponses(value = {@ApiResponse(description = "Success", responseCode = "200", content = {
+            @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = BookVO.class)))}),
+            @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
+            @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
+            @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
+            @ApiResponse(description = "Internal Erro", responseCode = "500", content = @Content)})
+
+    public ResponseEntity<PagedModel<EntityModel<BookVO>>> findBookByName(
+
+            @PathVariable(value = "nameBook") String nameBook,
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "limit", defaultValue = "15") Integer limit,
+            @RequestParam(value = "direction", defaultValue = "asc") String direction
+    ) {
+
+        var sortDirection = "desc".equalsIgnoreCase(direction) ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, limit, Sort.by(sortDirection, "nameBook"));
+        return ResponseEntity.ok(service.findBookByName(nameBook,pageable));
+    }
+
+
     @Operation(summary = "Find Book for ID", description = "Find Book for ID", tags = {"Book"})
     @ApiResponses(value = {@ApiResponse(description = "Success", responseCode = "200", content = {
             @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BookVO.class))}),
