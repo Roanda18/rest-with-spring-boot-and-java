@@ -60,10 +60,10 @@ public class PersonControllerYamlTest extends AbstractIntegrationTest {
                 .as(TokenVO.class, objectMapper)
                 .getAccessToken();
 
-                //.asString();
-                //TokenVO token = objectMapper.readValue(accessToken, TokenVO.class);
-                //assertNotNull(token);
-                //assertNotNull(token.getAccessToken());
+        //.asString();
+        //TokenVO token = objectMapper.readValue(accessToken, TokenVO.class);
+        //assertNotNull(token);
+        //assertNotNull(token.getAccessToken());
 
 
         specification = new RequestSpecBuilder()
@@ -183,6 +183,7 @@ public class PersonControllerYamlTest extends AbstractIntegrationTest {
         Assertions.assertEquals("Joao Pessoa", persistedPerson.getAddress());
         Assertions.assertEquals("Masculino", persistedPerson.getGender());
     }
+
     @Test
     @Order(4)
     public void testFindById() throws JsonProcessingException {
@@ -243,7 +244,7 @@ public class PersonControllerYamlTest extends AbstractIntegrationTest {
                 .config(RestAssuredConfig.config().encoderConfig(EncoderConfig.encoderConfig().encodeContentTypeAs(TestConfigs.CONTENT_TYPE_YML, ContentType.TEXT)))
                 .contentType(TestConfigs.CONTENT_TYPE_YML)
                 .accept(TestConfigs.CONTENT_TYPE_YML)
-                .queryParams("page", 3 , "size", 10, "direction", "asc")
+                .queryParams("page", 3, "size", 10, "direction", "asc")
                 .when()
                 .get()
                 .then()
@@ -297,7 +298,7 @@ public class PersonControllerYamlTest extends AbstractIntegrationTest {
                 .contentType(TestConfigs.CONTENT_TYPE_YML)
                 .accept(TestConfigs.CONTENT_TYPE_YML)
                 .pathParam("firstName", "matheus")
-                .queryParams("page", 0 , "size", 5, "direction", "asc")
+                .queryParams("page", 0, "size", 5, "direction", "asc")
                 .when()
                 .get("findPersonByName/{firstName}")
                 .then()
@@ -323,6 +324,41 @@ public class PersonControllerYamlTest extends AbstractIntegrationTest {
         Assertions.assertEquals("Matos", foundPersonOne.getLastName());
         Assertions.assertEquals("Brasilia", foundPersonOne.getAddress());
         Assertions.assertEquals("Male", foundPersonOne.getGender());
+
+    }
+
+    @Test
+    @Order(8)
+    public void testHateoas() throws JsonMappingException, JsonProcessingException {
+
+        var unthreatedContent = given().spec(specification)
+                .config(RestAssuredConfig.config().encoderConfig(EncoderConfig.encoderConfig().encodeContentTypeAs(TestConfigs.CONTENT_TYPE_YML, ContentType.TEXT)))
+                .contentType(TestConfigs.CONTENT_TYPE_YML)
+                .accept(TestConfigs.CONTENT_TYPE_YML)
+                .queryParams("page", 3, "limit", 10, "direction", "asc")
+                .when()
+                .get()
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .asString();
+
+        var content = unthreatedContent.replace("\n", "").replace("\r", "");
+
+        Assertions.assertTrue(content.contains("rel: \"self\"    href: \"http://localhost:8888/api/person/v1/1007\""));
+        Assertions.assertTrue(content.contains("rel: \"self\"    href: \"http://localhost:8888/api/person/v1/861\""));
+        Assertions.assertTrue(content.contains("rel: \"self\"    href: \"http://localhost:8888/api/person/v1/339\""));
+        Assertions.assertTrue(content.contains("rel: \"self\"    href: \"http://localhost:8888/api/person/v1/533\""));
+        Assertions.assertTrue(content.contains("rel: \"self\"    href: \"http://localhost:8888/api/person/v1/451\""));
+
+        Assertions.assertTrue(content.contains("page:  size: 10  totalElements: 1009  totalPages: 101  number: 3"));
+
+        Assertions.assertTrue(content.contains("rel: \"first\"  href: \"http://localhost:8888/api/person/v1?limit=10&direction=asc&page=0&size=10&sort=firstName,asc\""));
+        Assertions.assertTrue(content.contains("rel: \"prev\"  href: \"http://localhost:8888/api/person/v1?limit=10&direction=asc&page=2&size=10&sort=firstName,asc\""));
+        Assertions.assertTrue(content.contains("rel: \"self\"  href: \"http://localhost:8888/api/person/v1?page=3&limit=10&direction=asc\""));
+        Assertions.assertTrue(content.contains("rel: \"next\"  href: \"http://localhost:8888/api/person/v1?limit=10&direction=asc&page=4&size=10&sort=firstName,asc\""));
+        Assertions.assertTrue(content.contains("rel: \"last\"  href: \"http://localhost:8888/api/person/v1?limit=10&direction=asc&page=100&size=10&sort=firstName,asc\""));
 
     }
 
