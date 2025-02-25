@@ -3,7 +3,7 @@ server:
 cors:
   originPatterns: http://localhost:3000,http://localhost:8080,https://matheus.com.br
 file:
-  upload-dir: /Projetos/rest-with-spring-boot-and-java/05_fistStepsInJavaWithSpringBoot/rest-with-spring-boot-and-java/uploadDir
+  upload-dir: /Projetos/rest-with-spring-boot-and-java/uploadDir
 security:
   jwt:
     token:
