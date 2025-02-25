@@ -33,8 +33,9 @@ jobs:
     
     - name: Push to Docker hub 
       run: 
-        docker tag rest-with-spring-boot-matheus ${{ secrets.DOCKER_USERNAME }}/rest-with-spring-boot-matheus
-        docker push ${{ secrets.DOCKER_USERNAME }}/rest-with-spring-boot-matheus
+        docker tag ${{ secrets.DOCKER_USERNAME }}/rest-with-spring-boot-matheus:latest ${{ secrets.DOCKER_USERNAME }}/rest-with-spring-boot-matheus:${{ github.run_id }}
+        docker push ${{ secrets.DOCKER_USERNAME }}/rest-with-spring-boot-matheus:${{ github.run_id }}
+        docker push ${{ secrets.DOCKER_USERNAME }}/rest-with-spring-boot-matheus:latest
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     - name: Update dependency graph
