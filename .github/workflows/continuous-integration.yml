@@ -33,7 +33,7 @@ jobs:
     
     - name: Push to Docker hub 
       run: 
-        docker tag ${{ secrets.DOCKER_USERNAME }}/rest-with-spring-boot-matheus ${{ secrets.DOCKER_USERNAME }}/rest-with-spring-boot-matheus:${{ github.run_id }}
+        docker tag rest-with-spring-boot-matheus ${{ secrets.DOCKER_USERNAME }}/rest-with-spring-boot-matheus:${{ github.run_id }}
         
         docker push ${{ secrets.DOCKER_USERNAME }}/rest-with-spring-boot-matheus:${{ github.run_id }}
         docker push ${{ secrets.DOCKER_USERNAME }}/rest-with-spring-boot-matheus
